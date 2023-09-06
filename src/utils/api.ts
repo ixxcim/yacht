@@ -7,9 +7,9 @@ const hostname = location.hostname;
 const port = location.port;
 const baseUrl = `${protocol}//${hostname}${port && `:${port}`}`;
 
-export const useFetch = async (params: object) => {
+export const useFetch = async (url: string = '', params: object = {}) => {
     try {
-        const { data } = await Axios.get(`${baseUrl}/api/`, { params });
+        const { data } = await Axios.get(`${baseUrl}/api${url}`, { params });
         return data;
     } catch (error) {
         console.log(error);

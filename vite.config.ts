@@ -1,9 +1,13 @@
 import { defineConfig, loadEnv } from 'vite';
 
 import AutoImport from 'unplugin-auto-import/vite';
+import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import dotenv from 'dotenv';
+import eslint from 'vite-plugin-eslint';
 import path from 'path';
+import presetMini from '@unocss/preset-mini';
+import unocss from 'unocss/vite';
 import vue from '@vitejs/plugin-vue';
 
 const env = loadEnv('all', process.cwd());
@@ -17,6 +21,17 @@ let apiUrl = env.VITE_API_URL;
 export default defineConfig({
     plugins: [
         vue(),
+        eslint({
+            cache: false,
+            include: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.tsx']
+        }),
+        unocss({
+            presets: [presetMini()]
+        }),
+        Components({
+            resolvers: [ElementPlusResolver({ ssr: true })],
+            directoryAsNamespace: true
+        }),
         AutoImport({
             imports: ['vue', 'vue-router', 'pinia'],
             resolvers: [ElementPlusResolver({ ssr: true })]
