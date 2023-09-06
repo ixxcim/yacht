@@ -6,15 +6,24 @@
                     <Filter />
                 </div>
                 <div class="col-md-6 col-lg-9">
+                    <pre> {{ filter.getQueryParams }}</pre>
                     <div class="row gy-4">
-                        <div v-for="item in yachtList" :key="item.id" class="col-md-4">
-                            <div class="card">
+                        <div v-for="item in initData" :key="item.id" class="col-md-4">
+                            <div class="card un-cursor-pointer un-transition-transform un-duration-300 hover:-translate-y-2">
                                 <div class="position-relative un-h-56">
                                     <img
                                         :src="item.primaryPhoto.photo.formats.small.url"
                                         :alt="item.Brand.brand.name"
-                                        class="position-absolute inset-0 w-full h-100 card-img-top"
-                                    />
+                                        class="position-absolute inset-0 w-full h-100 card-img-top" />
+                                    <span
+                                        class="badge position-absolute un-top-4 un-right-4"
+                                        :class="{
+                                            'bg-success': item.publishing.sale_status?.type === 'Sold',
+                                            'bg-warning': item.publishing.sale_status?.type === 'Sale Pending',
+                                            'bg-primary': item.publishing.sale_status?.type === 'For Sale'
+                                        }"
+                                        >{{ item.publishing.sale_status?.type }}</span
+                                    >
                                 </div>
 
                                 <div class="card-body">
@@ -27,9 +36,13 @@
 
                                     <div class="grid grid-cols-2 mb-4 un-text-sm">
                                         <div>Dimensions (in m)</div>
-                                        <div>{{ item.hullMaterial.hullMaterial.material }}</div>
+                                        <div>
+                                            {{ item.hullMaterial.hullMaterial.material }}
+                                        </div>
                                         <div>Hull material</div>
-                                        <div>{{ item.hullMaterial.hullMaterial.material }}</div>
+                                        <div>
+                                            {{ item.hullMaterial.hullMaterial.material }}
+                                        </div>
                                         <div>Cabins</div>
                                         <div>
                                             {{ item.accomodation.areasSummary?.cabinsInTotal }}
@@ -40,7 +53,8 @@
                                         </div>
                                         <div>Price indication</div>
                                         <div>
-                                            {{ item.price.toLocaleString('nl-NL') }}
+                                            &euro;
+                                            {{ parseInt(item.price).toLocaleString('nl-NL') }}
                                         </div>
                                     </div>
                                     <a href="#" class="btn btn-outline-primary w-100">Learn more</a>
@@ -54,22 +68,23 @@
     </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computedAsync } from '@vueuse/core';
 import Filter from '@/components/filter.vue';
 import { useFetch } from '@/utils/api';
-import { IYacht } from '@/@types/yacht';
+import { useFilter } from '@/store/filter';
 
-let yachtList = ref<IYacht[]>([]);
+const filter = useFilter();
 
-async function initData() {
-    let res = await useFetch('/yacht-search/');
+const initData = computedAsync(
+    async (onCancel) => {
+        const abortController = new AbortController();
+        onCancel(() => abortController.abort());
 
-    if (res !== null) yachtList.value = res;
-}
-
-onMounted(() => {
-    initData();
-});
+        return await useFetch('/yacht-search/');
+    },
+    null,
+    { lazy: true }
+);
 </script>
 
 <style scoped lang="scss"></style>

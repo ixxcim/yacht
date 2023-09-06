@@ -126,6 +126,7 @@ module.exports = {
                 math: 'always'
             }
         ],
-        'vue/html-indent': 'off'
+        'vue/html-indent': 'off',
+        'vue/html-closing-bracket-newline': 'off'
     }
 };

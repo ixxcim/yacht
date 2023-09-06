@@ -1,6 +1,10 @@
 <template>
     <div class="card sticky-top un-top-8">
         <div class="card-body">
+            <pre>
+                {{ params }}
+                {{ length.max }}
+            </pre>
             <div class="mb-4">
                 <h5 class="card-title mb-4">Sort result</h5>
                 <select v-model="sortType" class="form-select">
@@ -85,16 +89,19 @@
                 <select v-model="buildYear" class="form-select">
                     <option selected>All</option>
                     <template v-for="item in buildYearList" :key="item.id">
-                        <option :value="item.id">{{ item.buildingyear }}</option>
+                        <option :value="item.buildingyear">{{ item.buildingyear }}</option>
                     </template>
                 </select>
             </div>
+
+            <button class="btn btn-danger w-100" @click="reset">Reset filter</button>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
 import { useFetch } from '@/utils/api';
+import { useFilter } from '@/store/filter';
 
 //! interface
 interface IBrand {
@@ -146,15 +153,19 @@ let priceRangeList = ref<IPriceRange[]>([]);
 //! non-reactive
 
 //? default values
-let params: any = {
-    sort: sortType.value,
+let params: Record<string, any> = reactive({
+    sort: sortType,
     pricemin: price.min,
     pricemax: price.max,
     lengthmin: length.min,
     lengthmax: length.max,
-    brands: brand.value,
-    buildyear: buildYear.value
-};
+    brands: brand,
+    buildyear: buildYear
+});
+
+const filter = useFilter();
+
+filter.setQueryParams(params);
 
 //! methods
 async function getBrands() {
@@ -200,22 +211,18 @@ async function getLengthRange() {
     }
 }
 
-//! lifecycles
+function reset() {
+    console.log('reset');
+}
 
-onMounted(() => {
-    getBrands();
-    getBuildYear();
-    getPriceRange();
-    getLengthRange();
-});
-
+//! watches
 watch(
     () => filterType.forsale,
-    (newValue) => {
+    (newValue: any) => {
         if (newValue) {
             params.forsale = newValue;
         } else {
-            delete params.forsale; //! remove from the object
+            delete params.forsale;
         }
     }
 );
@@ -225,8 +232,8 @@ watch(
     (newValue) => {
         if (newValue) {
             params.dealership = newValue;
-            params.brokerage = false;
-        } else {
+            params.brokerage = false; // set the params
+            filterType.brokerage = false; // set the checkbox
         }
     }
 );
@@ -236,24 +243,28 @@ watch(
     (newValue) => {
         if (newValue) {
             params.brokerage = newValue;
-            params.dealership = false;
-        } else {
-            params.dealership = true;
+            params.dealership = false; // set the params
+            filterType.dealership = false; // set the checkbox
         }
     }
 );
 
-watch(
-    () => filterType.brokerage,
-    (newValue) => {
-        if (newValue) {
-            params.brokerage = newValue;
-            params.dealership = false;
-        } else {
-            params.dealership = true;
-        }
+watch([() => filterType.dealership, () => filterType.brokerage], (newValue) => {
+    let validate = newValue.every((v) => v === false); // return if every value is false
+    if (validate) {
+        // remove object property
+        delete params.brokerage;
+        delete params.dealership;
     }
-);
+});
+
+//! life cycles
+onMounted(() => {
+    getBrands();
+    getBuildYear();
+    getPriceRange();
+    getLengthRange();
+});
 </script>
 
 <style scoped lang="scss"></style>
