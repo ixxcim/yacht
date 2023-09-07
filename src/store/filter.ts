@@ -1,21 +1,27 @@
 import { defineStore } from 'pinia';
 
-interface IFilter {
+interface IState {
     queryParams: object;
+    filteredItem: number;
 }
 
 export const useFilter = defineStore('filter', {
-    state(): IFilter {
+    state(): IState {
         return {
-            queryParams: []
+            queryParams: [],
+            filteredItem: 0
         };
     },
     getters: {
-        getQueryParams: (state) => state.queryParams
+        getQueryParams: (state) => state.queryParams,
+        getFilteredItem: (state) => state.filteredItem
     },
     actions: {
         setQueryParams(value: any) {
             return (this.queryParams = value);
+        },
+        setFilteredItem(value: any) {
+            return (this.filteredItem = value);
         }
     }
 });
