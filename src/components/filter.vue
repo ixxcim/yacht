@@ -93,7 +93,7 @@
             <div class="mb-4">
                 <h6 class="card-subtitle mb-2 text-body-secondary">Brand</h6>
                 <select v-model="brand" class="form-select" @change="updateQueryParams">
-                    <option selected :value="brand">All</option>
+                    <option selected :value="defaultValue.brand">All</option>
                     <template v-for="item in brandList" :key="item.id">
                         <option :value="item.id">{{ item.attributes.name }}</option>
                     </template>
@@ -103,14 +103,14 @@
             <div class="mb-4">
                 <h6 class="card-subtitle mb-2 text-body-secondary">Building year</h6>
                 <select v-model="buildYear" class="form-select" @change="updateQueryParams">
-                    <option selected :value="buildYear">All</option>
+                    <option selected :value="defaultValue.buildYear">All</option>
                     <template v-for="item in buildYearList" :key="item.id">
                         <option :value="item.buildingyear">{{ item.buildingyear }}</option>
                     </template>
                 </select>
             </div>
 
-            <button class="btn btn-danger w-100" @click="reset">Reset filter</button>
+            <button class="btn btn-danger w-100" :disabled="resetDisable" @click="reset">Reset filter</button>
         </div>
     </div>
 </template>
@@ -158,7 +158,9 @@ let defaultValue = {
     length: {
         min: 0,
         max: 0
-    }
+    },
+    brand: 'all',
+    buildYear: 'all'
 };
 
 //! reactive data
@@ -196,12 +198,31 @@ let params: Record<string, any> = reactive({
     buildyear: buildYear
 });
 
+let resetDisable = ref(true);
+
 const filter = useFilter();
 
 function updateQueryParams() {
     filter.setQueryParams(params);
     document.body.scrollTop = 0; //? For Safari
     document.documentElement.scrollTop = 0; //? For Chrome, Firefox, IE and Opera
+
+    if (
+        sortType.value !== 'length' ||
+        filterType.forsale ||
+        filterType.dealership ||
+        filterType.brokerage ||
+        price.min !== defaultValue.price.min ||
+        price.max !== defaultValue.price.max ||
+        length.min !== defaultValue.length.min ||
+        length.max !== defaultValue.length.max ||
+        brand.value !== defaultValue.brand ||
+        buildYear.value !== defaultValue.buildYear
+    ) {
+        resetDisable.value = false;
+    } else {
+        resetDisable.value = true;
+    }
 }
 
 //! methods
@@ -265,8 +286,8 @@ function reset() {
     price.max = defaultValue.price.max;
     length.min = defaultValue.length.min;
     length.max = defaultValue.length.max;
-    brand.value = 'all';
-    buildYear.value = 'all';
+    brand.value = defaultValue.brand;
+    buildYear.value = defaultValue.buildYear;
 
     //* scroll back to top
     document.body.scrollTop = 0; //? For Safari

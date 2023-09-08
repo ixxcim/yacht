@@ -5,8 +5,11 @@ import 'uno.css';
 import App from './app.vue';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import createRouter from '@/router';
 
-const pinia = createPinia();
+const store = createPinia();
 const app = createApp(App);
-app.use(pinia);
+const router = createRouter();
+
+app.use(store).use(router);
 app.mount('#app');
