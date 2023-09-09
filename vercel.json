@@ -1,8 +1,8 @@
 {
     "rewrites": [
         {
-            "source": "/api/(.*)",
-            "destination": "/api"
+            "source": "/api/:path(.*)",
+            "destination": "https://staging.backend.yachtfull.com/api/:path"
         },
         {
             "source": "/(.*)",
