@@ -7,7 +7,7 @@ const axios = setupCache(Axios);
 
 export const useFetch = async (url: string = '', params: object = {}) => {
     try {
-        const { data } = await axios.get(`/api${url}`, { params });
+        const { data } = await axios.get(`/v1${url}`, { params });
         return data;
     } catch (error) {
         console.log(error);

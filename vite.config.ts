@@ -46,12 +46,12 @@ export default defineConfig({
         host: 'localhost',
         port: parseInt(port),
         proxy: {
-            '/api': {
+            '/v1': {
                 target: apiUrl,
                 changeOrigin: true,
                 secure: false,
                 ws: true,
-                rewrite: (path) => path.replace(/^\/api/, '')
+                rewrite: (path) => path.replace(/^\/v1/, '')
             }
         },
         cors: {
