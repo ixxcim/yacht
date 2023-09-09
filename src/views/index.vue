@@ -178,7 +178,9 @@
                             <div class="row gy-4">
                                 <div v-for="item in yachtList" :key="item.id" class="col-md-4">
                                     <div
+                                        ref="yachtCardRef"
                                         class="card un-cursor-pointer un-transition-transform un-duration-300 hover:-translate-y-2"
+                                        :data-id="item.id"
                                         :class="visitedItemStyled(item.id)"
                                         @click="getItemData(item)">
                                         <div class="position-relative un-h-56">
@@ -258,7 +260,7 @@ const NAMESPACE = 'YATCH_APP';
 
 const storage = localStorage.getItem(NAMESPACE);
 
-const getStorage = JSON.parse(storage || '{}'); // parse storage string to object
+const parseStorage = JSON.parse(storage || '{}'); // parse storage string to object
 
 const filter = useFilter();
 
@@ -268,15 +270,20 @@ interface IVisitedList {
 }
 
 let yachtList = ref<IYacht[]>([]);
+let yachtCardRef = ref([]);
 let isLoading = ref(true);
 let isLoadingFilter = ref(false);
 
 let visitedList: IVisitedList[] = [];
 
 const visitedItemStyled = (id: any) => {
-    return {
-        'bg-slate-100': getStorage.some((el: any) => el.id === id)
-    };
+    if (storage) {
+        return {
+            'bg-slate-100': parseStorage.some((el: any) => el.id === id)
+        };
+    }
+
+    return '';
 };
 
 async function init() {
@@ -294,7 +301,7 @@ function getItemData(data: any) {
     if (storage) {
         // check the storage exist
         visitedList = JSON.parse(localStorage.getItem(NAMESPACE) || '{}'); // convert array text to object
-        if (!getStorage.some((el: any) => el.id === id)) {
+        if (!parseStorage.some((el: any) => el.id === id)) {
             // don't push if duplicate
             visitedList.push({
                 id,
