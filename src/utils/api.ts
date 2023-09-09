@@ -8,13 +8,13 @@ const hostname = location.hostname;
 const port = location.port;
 const baseUrl = `${protocol}//${hostname}${port && `:${port}`}`;
 
-const axios = setupCache(Axios);
+// const api = import.meta.env.DEV ? `${baseUrl}/api` : import.meta.env.VITE_API_URL;
 
-const api = import.meta.env.VITE_LOCAL_API === 'true' ? `${baseUrl}/api` : import.meta.env.VITE_API_URL;
+const axios = setupCache(Axios);
 
 export const useFetch = async (url: string = '', params: object = {}) => {
     try {
-        const { data } = await axios.get(`${api}${url}`, { params });
+        const { data } = await axios.get(`${baseUrl}/api${url}`, { params });
         return data;
     } catch (error) {
         console.log(error);
