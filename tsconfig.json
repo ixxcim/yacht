@@ -23,8 +23,8 @@
         "baseUrl": ".",
         "esModuleInterop": true,
         "sourceMap": true,
-        "typeRoots": ["."],
-        "types": ["axios", "node", "vite/client"],
+        "typeRoots": ["./"],
+        "types": ["vite/client"],
         "paths": {
             "@/*": ["src/*"]
         }
