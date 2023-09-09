@@ -178,7 +178,9 @@
                             <div class="row gy-4">
                                 <div v-for="item in yachtList" :key="item.id" class="col-md-4">
                                     <div
-                                        class="card un-cursor-pointer un-transition-transform un-duration-300 hover:-translate-y-2">
+                                        class="card un-cursor-pointer un-transition-transform un-duration-300 hover:-translate-y-2"
+                                        :class="visitedItemStyled(item.id)"
+                                        @click="getItemData(item)">
                                         <div class="position-relative un-h-56">
                                             <img
                                                 :src="item.primaryPhoto.photo.formats.small.url"
@@ -252,11 +254,30 @@ import { ref } from 'vue';
 import { useFetch } from '@/utils/api';
 import { IYacht } from '@/@types/yacht';
 
+const NAMESPACE = 'YATCH_APP';
+
+const storage = localStorage.getItem(NAMESPACE);
+
+const getStorage = JSON.parse(storage || '{}'); // parse storage string to object
+
 const filter = useFilter();
+
+interface IVisitedList {
+    id: number;
+    name: string;
+}
 
 let yachtList = ref<IYacht[]>([]);
 let isLoading = ref(true);
 let isLoadingFilter = ref(false);
+
+let visitedList: IVisitedList[] = [];
+
+const visitedItemStyled = (id: any) => {
+    return {
+        'bg-slate-100': getStorage.some((el: any) => el.id === id)
+    };
+};
 
 async function init() {
     let res = await useFetch('/yacht-search/');
@@ -264,6 +285,32 @@ async function init() {
         yachtList.value = res;
         isLoading.value = false;
         filter.filteredItem = res.length;
+    }
+}
+
+function getItemData(data: any) {
+    const { id, boatName } = data;
+
+    if (storage) {
+        // check the storage exist
+        visitedList = JSON.parse(localStorage.getItem(NAMESPACE) || '{}'); // convert array text to object
+        if (!getStorage.some((el: any) => el.id === id)) {
+            // don't push if duplicate
+            visitedList.push({
+                id,
+                name: boatName
+            });
+        }
+
+        localStorage.setItem(NAMESPACE, JSON.stringify(visitedList));
+    } else {
+        // if storage doesn't exist push new data
+        visitedList.push({
+            id,
+            name: boatName
+        });
+
+        localStorage.setItem(NAMESPACE, JSON.stringify(visitedList));
     }
 }
 
