@@ -14,14 +14,14 @@ declare module 'vue-router' {
 
 const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) => {
     if (to.name === from.name) {
+        // initial scroll position to top
         to.meta?.scrollPos && (to.meta.scrollPos.top = 0);
+
         return { left: 0, top: 0 };
     }
 
     const scrollPos = savedPosition || to.meta?.scrollPos || { left: 0, top: 0 };
-    return new Promise((resolve) => {
-        setTimeout(() => resolve(scrollPos), 500);
-    });
+    return new Promise((resolve) => setTimeout(() => resolve(scrollPos), to.name === 'index' ? 500 : 0));
 };
 
 export default function () {
@@ -43,12 +43,6 @@ export default function () {
             {
                 path: '/yacht/:id',
                 name: 'yacht',
-                meta: {
-                    scrollPos: {
-                        top: 0,
-                        left: 0
-                    }
-                },
                 component: () => import('@/views/yacht.vue')
             }
         ],

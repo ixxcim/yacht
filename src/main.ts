@@ -11,7 +11,7 @@ const store = createPinia();
 const app = createApp(App);
 const router = createRouter();
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((_to, from, next) => {
     from.meta?.scrollPos && (from.meta.scrollPos.top = document.documentElement.scrollTop);
 
     return next();
