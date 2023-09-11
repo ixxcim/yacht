@@ -289,6 +289,8 @@ function reset() {
     brand.value = defaultValue.brand;
     buildYear.value = defaultValue.buildYear;
 
+    resetDisable.value = true;
+
     //* scroll back to top
     document.body.scrollTop = 0; //? For Safari
     document.documentElement.scrollTop = 0; //? For Chrome, Firefox, IE and Opera
