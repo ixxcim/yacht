@@ -15,14 +15,17 @@
                 <h2 class="font-medium">{{ yachtData.boatName }}</h2>
                 <h5 class="font-normal">{{ yachtData.Brand?.brand.name }} - {{ yachtData.Brand?.model }}</h5>
             </div>
+
             <div class="position-relative grid grid-cols-5 gap-2 row-span-2 h-400px rounded overflow-hidden mb-4">
-                <div
-                    v-for="(image, index) in img"
-                    :key="image"
-                    class="position-relative"
-                    :class="{ 'col-span-3 row-span-2': index == 0 }">
-                    <img :src="image" class="position-absolute inset-0 w-full h-full un-object-cover" />
-                </div>
+                <template v-for="item in yachtData.media?.Pictures" :key="item">
+                    <div
+                        v-for="(image, index) in item.pictures.splice(0, 5)"
+                        :key="image"
+                        class="position-relative"
+                        :class="{ 'col-span-3 row-span-2': index == 0 }">
+                        <img :src="image.url" class="position-absolute inset-0 w-full h-full un-object-cover" />
+                    </div>
+                </template>
             </div>
             <div class="row gx-5 mb-4">
                 <div class="col-md-8">
@@ -156,14 +159,6 @@ import { useRoute } from 'vue-router';
 import { ref, watch } from 'vue';
 
 const route = useRoute();
-
-const img = [
-    'https://images.pexels.com/photos/843633/pexels-photo-843633.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    'https://images.pexels.com/photos/163236/luxury-yacht-boat-speed-water-163236.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    'https://images.pexels.com/photos/1007836/pexels-photo-1007836.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    'https://images.pexels.com/photos/42091/pexels-photo-42091.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    'https://images.pexels.com/photos/2090763/pexels-photo-2090763.jpeg?auto=compress&cs=tinysrgb&w=1600'
-];
 
 const menu = [
     'General Information',
